@@ -1,5 +1,5 @@
 const express = require('express');
-const { criarEvento, buscarTodosEventos, buscarEventoPorId, atualizarEvento, excluirEvento } = require('../services/eventService');
+const { criarEvento, buscarTodosEventos, buscarEventoPorId, atualizarEvento, excluirEvento } = require('../services/eventoService');
 
 const router = express.Router();
 

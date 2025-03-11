@@ -1,4 +1,5 @@
-const prisma = require('../prisma');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
 async function criarEvento(user_id, category_id, nome, descricao, data, localizacao, image_url) {
     try {
@@ -8,7 +9,7 @@ async function criarEvento(user_id, category_id, nome, descricao, data, localiza
                 category_id,
                 nome,
                 descricao,
-                data: new Date(data),
+                data: new Date(data),  
                 localizacao,
                 image_url
             }
@@ -19,13 +20,12 @@ async function criarEvento(user_id, category_id, nome, descricao, data, localiza
     }
 }
 
-
 async function buscarTodosEventos() {
     try {
         const eventos = await prisma.evento.findMany({
             include: {
-                organizador: true,
-                categoria: true    
+                organizador: true,  
+                categoria: true      
             }
         });
         return eventos;
@@ -34,14 +34,13 @@ async function buscarTodosEventos() {
     }
 }
 
-
 async function buscarEventoPorId(id) {
     try {
         const evento = await prisma.evento.findUnique({
             where: { id },
             include: {
-                organizador: true,
-                categoria: true
+                organizador: true,  
+                categoria: true     
             }
         });
 
@@ -54,7 +53,6 @@ async function buscarEventoPorId(id) {
         throw new Error(error.message);
     }
 }
-
 
 async function atualizarEvento(id, dados) {
     try {
@@ -97,4 +95,10 @@ async function excluirEvento(id) {
     }
 }
 
-module.exports = { criarEvento, buscarTodosEventos, buscarEventoPorId, atualizarEvento, excluirEvento };
+module.exports = { 
+    criarEvento, 
+    buscarTodosEventos, 
+    buscarEventoPorId, 
+    atualizarEvento, 
+    excluirEvento 
+};
