@@ -1,18 +1,26 @@
+
 const express = require('express');
 const { criarEvento, buscarTodosEventos, buscarEventoPorId, atualizarEvento, excluirEvento } = require('../services/eventoService');
+const autenticarUsuario = require('../middlewares/authMiddleware');
 
 const router = express.Router();
 
-
-router.post('/', async (req, res) => {
+router.post('/', autenticarUsuario, async (req, res) => {
     try {
-        const { user_id, category_id, nome, descricao, data, localizacao, image_url } = req.body;
+        const { category_id, nome, descricao, data, localizacao, image_url } = req.body;
+        const user_id = req.usuario.id; 
+
+        if (!category_id || !nome || !data || !localizacao) {
+            return res.status(400).json({ error: "Campos obrigatórios: category_id, nome, data, localizacao" });
+        }
+
         const novoEvento = await criarEvento(user_id, category_id, nome, descricao, data, localizacao, image_url);
         res.status(201).json(novoEvento);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 });
+
 
 
 router.get('/', async (req, res) => {

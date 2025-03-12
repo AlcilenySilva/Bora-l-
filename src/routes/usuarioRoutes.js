@@ -4,17 +4,27 @@ const { criarUsuario, buscarTodosUsuarios, editarUsuario, excluirUsuario } = req
 const router = express.Router(); 
 
 
-router.post('/usuarios', async (req, res) => {
-    const { nome, email, senha } = req.body;
-
+router.post('/cadastro', async (req, res) => {
     try {
-        const novoUsuario = await criarUsuario(nome, email, senha);
-        res.status(201).json(novoUsuario);
+        const { nome, email, senha } = req.body;
+
+        const usuarioExistente = await prisma.usuario.findUnique({ where: { email } });
+        if (usuarioExistente) {
+            return res.status(400).json({ error: 'E-mail já cadastrado.' });
+        }
+
+        
+        const senhaHash = await bcrypt.hash(senha, 10);
+
+        const novoUsuario = await prisma.usuario.create({
+            data: { nome, email, senha: senhaHash },
+        });
+
+        res.status(201).json({ id: novoUsuario.id, nome: novoUsuario.nome, email: novoUsuario.email });
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        res.status(500).json({ error: 'Erro ao cadastrar usuário.' });
     }
 });
-
 
 router.get('/usuarios', async (req, res) => {
     try {

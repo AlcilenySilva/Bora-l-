@@ -1,5 +1,15 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+ 
+   async function criarCategoria(nome) {
+    try {
+        return await prisma.categoria.create({
+            data: { nome },
+        });
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
 
 async function buscarTodasCategorias() {
     try {
@@ -9,7 +19,7 @@ async function buscarTodasCategorias() {
         throw new Error(error.message);
     }
 }
-
+  
 async function excluirCategoria(id) {
     try {
         const categoriaExistente = await prisma.categoria.findUnique({
@@ -30,4 +40,4 @@ async function excluirCategoria(id) {
     }
 }
 
-module.exports = { buscarTodasCategorias, excluirCategoria };
+module.exports = {criarCategoria, buscarTodasCategorias, excluirCategoria, };

@@ -3,7 +3,7 @@ const { criarCategoria, buscarTodasCategorias, excluirCategoria } = require('../
 
 const router = express.Router();
 
-// Rota criar
+
 router.post('/', async (req, res) => {
     try {
         const { nome } = req.body;
@@ -14,7 +14,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-// listar todas as categorias
+
 router.get('/', async (req, res) => {
     try {
         const categorias = await buscarTodasCategorias();
@@ -24,7 +24,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Rota para excluir uma categoria
+
 router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;
