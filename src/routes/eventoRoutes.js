@@ -1,4 +1,3 @@
-
 const express = require('express');
 const { criarEvento, buscarTodosEventos, buscarEventoPorId, atualizarEvento, excluirEvento } = require('../services/eventoService');
 const autenticarUsuario = require('../middlewares/authMiddleware');

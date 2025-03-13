@@ -1,63 +1,66 @@
 const express = require('express');
-const { criarUsuario, buscarTodosUsuarios, editarUsuario, excluirUsuario } = require('../services/usuarioService');
+const bcrypt = require('bcrypt');
+const { PrismaClient } = require('@prisma/client');
 
-const router = express.Router(); 
+const prisma = new PrismaClient();
+const router = express.Router();
 
 
-router.post('/cadastro', async (req, res) => {
+router.post('/', async (req, res) => {
     try {
         const { nome, email, senha } = req.body;
 
+        
         const usuarioExistente = await prisma.usuario.findUnique({ where: { email } });
         if (usuarioExistente) {
-            return res.status(400).json({ error: 'E-mail já cadastrado.' });
+            return res.status(400).json({ error: "E-mail já cadastrado!" });
         }
 
-        
-        const senhaHash = await bcrypt.hash(senha, 10);
+      
+        const senhaCriptografada = await bcrypt.hash(senha, 10);
 
+        
         const novoUsuario = await prisma.usuario.create({
-            data: { nome, email, senha: senhaHash },
+            data: { nome, email, senha: senhaCriptografada },
         });
 
-        res.status(201).json({ id: novoUsuario.id, nome: novoUsuario.nome, email: novoUsuario.email });
+        res.status(201).json(novoUsuario);
     } catch (error) {
-        res.status(500).json({ error: 'Erro ao cadastrar usuário.' });
+        res.status(400).json({ error: error.message });
     }
 });
 
-router.get('/usuarios', async (req, res) => {
+
+router.get('/', async (req, res) => {
     try {
-        const usuarios = await buscarTodosUsuarios();
-        res.status(200).json(usuarios);
+        const usuarios = await prisma.usuario.findMany();
+        res.json(usuarios);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
 
-router.put('/usuarios/:id', async (req, res) => {
-    const { id } = req.params;
-    const { nome, email, senha } = req.body;
-
+router.put('/:id', async (req, res) => {
     try {
-        const usuarioAtualizado = await editarUsuario(Number(id), nome, email, senha);
-        res.status(200).json(usuarioAtualizado);
+        const { id } = req.params;
+        const dados = req.body;
+        const usuarioAtualizado = await editarUsuario(id, dados);
+        res.json(usuarioAtualizado);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+router.delete('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const resultado = await excluirUsuario(id);
+        res.json(resultado);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 });
 
 
-router.delete('/usuarios/:id', async (req, res) => {
-    const { id } = req.params;
-
-    try {
-        const mensagem = await excluirUsuario(Number(id));
-        res.status(200).json(mensagem);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-});
-
-module.exports = router; 
+module.exports = router;
