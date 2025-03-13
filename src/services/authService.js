@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const { PrismaClient } = require('@prisma/client');
 
-const prisma = new PrismaClient();
+
+
 const SECRET_KEY = "seu_segredo_super_secreto"; 
 
 async function autenticarUsuario(email, senha) {
