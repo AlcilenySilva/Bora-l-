@@ -3,11 +3,9 @@ const prisma = new PrismaClient();
 
 const express = require('express');
 const { criarUsuario, buscarTodosUsuarios, editarUsuario, excluirUsuario } = require('../services/usuarioService');
-;
 const router = express.Router(); 
 
-
-router.post('/usuarios', async (req, res) => {
+router.post('/', async (req, res) => { 
     const { nome, email, senha } = req.body;
 
     try {
@@ -18,8 +16,7 @@ router.post('/usuarios', async (req, res) => {
     }
 });
 
-
-router.get('/usuarios', async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const usuarios = await buscarTodosUsuarios();
         res.status(200).json(usuarios);
@@ -28,8 +25,7 @@ router.get('/usuarios', async (req, res) => {
     }
 });
 
-
-router.put('/usuarios/:id', async (req, res) => {
+router.put('/:id', async (req, res) => {  
     const { id } = req.params;
     const { nome, email, senha } = req.body;
 
@@ -41,8 +37,7 @@ router.put('/usuarios/:id', async (req, res) => {
     }
 });
 
-
-router.delete('/usuarios/:id', async (req, res) => {
+router.delete('/:id', async (req, res) => {  
     const { id } = req.params;
 
     try {
@@ -53,4 +48,4 @@ router.delete('/usuarios/:id', async (req, res) => {
     }
 });
 
-module.exports = router; 
+module.exports = router;

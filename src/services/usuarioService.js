@@ -63,4 +63,5 @@ async function excluirUsuario(id) {
     }
 }
 
+
 module.exports = { criarUsuario, buscarTodosUsuarios, editarUsuario, excluirUsuario };
