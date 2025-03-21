@@ -12,7 +12,7 @@ app.use('/usuarios', usuarioRoutes);
 app.use('/categoria', categoriaRoutes); 
 app.use('/eventos', eventoRoutes);    
 app.use('/auth', authRoutes);      
+ 
 
-
-const PORT = 3001;
+const PORT = 3002;
 app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));

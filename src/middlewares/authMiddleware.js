@@ -1,21 +1,20 @@
+const jwt = require('jsonwebtoken');
 
-
- const jwt = require('jsonwebtoken'); 
-
-const autenticarUsuario = (req, res, next) => {
-    const token = req.headers.authorization?.split(' ')[1];
+const authMiddleware = (req, res, next) => {
+    const token = req.headers.authorization?.split(' ')[1]; 
 
     if (!token) {
-        return res.status(401).json({ error: "Token de autenticação ausente" });
+        return res.status(401).json({ error: 'Token não fornecido' });
     }
 
-    try {
-        const decoded = jwt.verify(token, 'segredo'); 
-        req.usuario = decoded;
-        next(); 
-    } catch (error) {
-        return res.status(401).json({ error: "Token de autenticação inválido" });
-    }
+    jwt.verify(token, process.env.WT_SECRET || 'default_secret_key', (err, decoded) => {
+        if (err) {
+            return res.status(401).json({ error: 'Token inválido' });
+        }
+
+        req.user = decoded;  
+        next();
+    });
 };
 
-module.exports = autenticarUsuario;
+module.exports = authMiddleware;

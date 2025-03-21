@@ -1,104 +1,61 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-async function criarEvento(user_id, category_id, nome, descricao, data, localizacao, image_url) {
-    try {
-        const novoEvento = await prisma.evento.create({
-            data: {
-                user_id,
-                category_id,
-                nome,
-                descricao,
-                data: new Date(data),  
-                localizacao,
-                image_url
-            }
-        });
-        return novoEvento;
-    } catch (error) {
-        throw new Error(error.message);
-    }
-}
+const listarEventos = async () => {
+    return await prisma.evento.findMany();
+};
 
-async function buscarTodosEventos() {
-    try {
-        const eventos = await prisma.evento.findMany({
-            include: {
-                organizador: true,  
-                categoria: true      
-            }
-        });
-        return eventos;
-    } catch (error) {
-        throw new Error(error.message);
-    }
-}
-
-async function buscarEventoPorId(id) {
-    try {
-        const evento = await prisma.evento.findUnique({
-            where: { id },
-            include: {
-                organizador: true,  
-                categoria: true     
-            }
-        });
-
-        if (!evento) {
-            throw new Error('Evento não encontrado');
+const criarEvento = async (nome, data, descricao, userId) => {
+    return await prisma.evento.create({
+        data: {
+            nome,
+            data,
+            descricao,
+            userId,
         }
+    });
+};
 
-        return evento;
-    } catch (error) {
-        throw new Error(error.message);
+const editarEvento = async (id, nome, data, descricao, userId) => {
+    const eventoExistente = await prisma.evento.findUnique({
+        where: { id: parseInt(id) },
+    });
+
+    if (!eventoExistente) {
+        throw new Error('Evento não encontrado');
     }
-}
 
-async function atualizarEvento(id, dados) {
-    try {
-        const eventoExistente = await prisma.evento.findUnique({
-            where: { id }
-        });
-
-        if (!eventoExistente) {
-            throw new Error('Evento não encontrado');
-        }
-
-        const eventoAtualizado = await prisma.evento.update({
-            where: { id },
-            data: dados
-        });
-
-        return eventoAtualizado;
-    } catch (error) {
-        throw new Error(error.message);
+    if (eventoExistente.userId !== userId) {
+        throw new Error('Você não tem permissão para editar este evento');
     }
-}
 
-async function excluirEvento(id) {
-    try {
-        const eventoExistente = await prisma.evento.findUnique({
-            where: { id }
-        });
+    return await prisma.evento.update({
+        where: { id: parseInt(id) },
+        data: { nome, data, descricao },
+    });
+};
 
-        if (!eventoExistente) {
-            throw new Error('Evento não encontrado');
-        }
+const excluirEvento = async (id, userId) => {
+    const eventoExistente = await prisma.evento.findUnique({
+        where: { id: parseInt(id) },
+    });
 
-        await prisma.evento.delete({
-            where: { id }
-        });
-
-        return { message: 'Evento excluído com sucesso' };
-    } catch (error) {
-        throw new Error(error.message);
+    if (!eventoExistente) {
+        throw new Error('Evento não encontrado');
     }
-}
 
-module.exports = { 
-    criarEvento, 
-    buscarTodosEventos, 
-    buscarEventoPorId, 
-    atualizarEvento, 
-    excluirEvento 
+    if (eventoExistente.userId !== userId) {
+        throw new Error('Você não tem permissão para excluir este evento');
+    }
+
+    await prisma.evento.delete({
+        where: { id: parseInt(id) },
+    });
+};
+
+module.exports = {
+    listarEventos,
+    criarEvento,
+    editarEvento,
+    excluirEvento
 };

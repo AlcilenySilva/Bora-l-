@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 
 const senhaHash = '12345'; 
 
-// A senha que você deseja comparar
+
 const senhaFornecida = '12345';
 
 bcrypt.compare(senhaFornecida, senhaHash, (err, res) => {
